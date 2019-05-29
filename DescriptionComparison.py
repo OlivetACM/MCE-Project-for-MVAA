@@ -36,7 +36,6 @@ def tokenize_sentence(group1):
     sentence = pos_tag(word_tokenize(group1))
     sentence = [tagged_to_synset(*tagged_word) for tagged_word in sentence]
     sentence = [ss for ss in sentence if ss]
-    # print("Sentence: ", sentence)
     return sentence
 
 
@@ -49,9 +48,6 @@ def compare_words(sentence1, sentence2, zero_bad_matches):
     """
     final_scores = []
     total_score = 0.0
-
-    # print("sentence1 type: ", type(sentence1))
-    # print("element type: ", type(sentence1[0]))
 
     for word1 in sentence1:
         word_scores = []
@@ -95,28 +91,6 @@ def compare_descriptions(class1, class2, zero_bad_matches):
     return score
 
 
-'''
-def compare_descriptions(class1, class2, zero_bad_matches):
-    """
-    :param class1: First description being compared
-    :param class2: Second description being compared
-    :param zero_bad_matches: If true, will allow for bad matches to be 0'd out, resulting in lower
-    but technically more accurate results
-    :return: Similarity score of the two descriptions
-
-    Compute similarity between descriptions using Wordnet
-    """
-
-    sentence1 = tokenize_sentence(class1)
-    sentence2 = tokenize_sentence(class2)
-
-    symmetrical_score = (compare_words(sentence1, sentence2, zero_bad_matches) +
-                         compare_words(sentence2, sentence1, zero_bad_matches)) / 2
-
-    return symmetrical_score
-'''
-
-
 def fetch_course_descriptions(institution_list, db_name):
     """
     :param institution_list: List of empty dictionaries corresponding with the possible institutions to be compared
@@ -151,26 +125,6 @@ def fetch_course_descriptions(institution_list, db_name):
                 institution_list[institution_check - 1][course_string] = description_string
 
     return institution_list
-
-
-# def scrub(table_name):
-#     # These functions format the 'create' statement programmatically
-#     return ''.join(chr for chr in table_name if chr.isalnum())
-#
-#
-# def create_create_statement(table_name, columns):
-#     """
-#     :param table_name: name of table to be created
-#     :param columns: list of column names
-#     :return: string create statement
-#     """
-#     return f"create table {scrub(table_name)} ({columns[0]}" + (
-#             ",{} "*(len(columns)-1)).format(*map(scrub, columns[1:])) + ")"
-
-
-# def scrub(table_name):
-#     # These functions format the 'create' statement programmatically
-#     return ''.join(chr for chr in table_name if chr.isalnum())
 
 
 def create_create_statement(table, columns):
@@ -342,6 +296,12 @@ def copy_table(db1, db2, tb):
     conn.commit()
 
 
+def compare_courses(course1, course2, db):
+    conn = sqlite3.connect(db)
+    curs = conn.cursor()
+
+
+
 '''
 # Code used for building table and testing
 course_and_desc_list = [{}, {}, {}]
@@ -364,19 +324,14 @@ for course, desc in course_and_desc_list[2].items():
 
 
 db1 = 'mce.sqlite3'
-db2 = 'mce2.sqlite3'
-db3 = 'mce_new.sqlite3'
 
 conn1 = sqlite3.connect(db1)
 curs1 = conn1.cursor()
 
-tb = 'Course'
-oc1 = 'MTH 120'
-jst1 = 'A-830-0030'
+# copy_table(db1, db3, 'Course')
+# copy_table(db1, db2, 'Reviewer')
 
-copy_table(db1, db3, 'Course')
-
-form_data = grab_form_data(db3, jst1, oc1)
+form_data = grab_form_data(db1, jst1, oc1)
 print(form_data)
 
 '''
@@ -389,6 +344,3 @@ curs.execute('create table if not exists DescSynComparisons(OC_Courses text, A_8
 curs.execute('insert into DescSynComparisons select * from mce2.DescriptionComparisons')
 conn.commit()
 '''
-
-
-
