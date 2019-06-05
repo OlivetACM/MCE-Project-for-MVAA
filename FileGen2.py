@@ -8,6 +8,8 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH #does not work for ryans pycharm
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT #this one works for ryans pycharm
 from docx.oxml.shared import OxmlElement, qn
 import datetime
+import Reviewer
+import Course
 import textwrap
 
 #pip3 install python-docx
@@ -24,11 +26,12 @@ import textwrap
 class FileGen:
 
         # initializing variables to be used throught the generator
-    def __init__(self, instructor_name, department, military_course, oc_course, oc_course_name, mc_course_name, oc_description, mc_description):
+    def __init__(self, oc_course, jst_course, reviewer):  # instructor_name, department, military_course, oc_course, oc_course_name, mc_course_name, oc_description, mc_description):
         # test.docx should be the name of the template file.
-        self.doc = Document('Form_Template_Version_5_13_2019.docx')# Form_Template_Version_5_13_2019.docx # Form_Template_Version_4_11_2019.docx
+        self.doc = Document('Form_Template_Version_5_13_2019.docx')
+        # Form_Template_Version_5_13_2019.docx # Form_Template_Version_4_11_2019.docx
         self.total_tables = self.doc.tables  # locating document tables
-        # locating correct table for course comparason
+        # locating correct table for course comparison
         self.comp_table = self.total_tables[0]
         self.comp_rows = self.comp_table.rows
         self.comp_copy_row = self.comp_rows[3]
@@ -39,14 +42,14 @@ class FileGen:
         # data for filling in top of doc.
         self.instructor_name_cell = self.comp_table.cell(1, 0)
         self.oc_course_cell = self.comp_table.cell(1, 1)
-        self.instr_name = instructor_name
-        self.dep_name = department
-        self.m_course = military_course
-        self.oc_course = oc_course
-        self.oc_description = oc_description
-        self.mc_description = mc_description
-        self.oc_course_name = oc_course_name
-        self.mc_course_name = mc_course_name
+        self.instr_name = reviewer.name
+        self.dep_name = reviewer.department
+        self.m_course = jst_course.number
+        self.oc_course = oc_course.number
+        self.oc_description = oc_course.description
+        self.mc_description = jst_course.description
+        self.oc_course_name = oc_course.name
+        self.mc_course_name = jst_course.name
         # bellow marks out the columns for both military and olivet course
         # outcomes.
         self.comp_row = 3

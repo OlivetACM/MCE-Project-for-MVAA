@@ -154,8 +154,7 @@ def compare_courses(course1, course2, reviewer):
         comp_list.sort(key=lambda x: x[1], reverse=True)
         comparison_dict[outcome1] = comp_list
 
-    file_gen = FileGen2.FileGen(reviewer.name, reviewer.department, course2.number, course1.number,
-                                course1.name, course2.name, course1.description, course2.description)
+    file_gen = FileGen2.FileGen(course1, course2, reviewer)
 
     for oc, jst in comparison_dict.items():
         file_gen.Like_Outcomes(oc, jst)
