@@ -1,7 +1,17 @@
-class Reviewer():
+import sqlite3
 
-    def __init__(self, name, phone, email, dept):
+
+class Reviewer:
+
+    def __init__(self, database, name):
+        # Establish connection to the database
+        conn = sqlite3.connect(database)
+        curs = conn.cursor()
+
         self.name = name
-        self.phone = phone
-        self.email = email
-        self.department = dept
+        self.phone = ''.join(curs.execute('select ReviewerPhone from Reviewer where ReviewerName=?',
+                                          (name,)).fetchone())
+        self.email = ''.join(curs.execute('select ReviewerEmail from Reviewer where ReviewerName=?',
+                                          (name,)).fetchone())
+        self.department = ''.join(curs.execute('select ReviewerDepartment from Reviewer where ReviewerName=?',
+                                               (name,)).fetchone())

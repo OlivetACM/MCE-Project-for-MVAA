@@ -1,9 +1,10 @@
 from nltk import word_tokenize, pos_tag
 from nltk.corpus import wordnet as wn
-from nltk.corpus import wordnet_ic
-import sqlite3
+# from nltk.corpus import wordnet_ic
+# import sqlite3
 import FileGen2
-import Course
+from Course import Course
+from Reviewer import Reviewer
 
 
 def penn_to_wn(tag):
@@ -49,41 +50,12 @@ def tokenize_sentence(group1):
     return sentence
 
 
-# initial compare_words function
-# def compare_words2(sentence1, sentence2):
-#     """
-#     :param sentence1: String - First sentence to be compared
-#     :param sentence2: String - Second sentence to be compared
-#     :return: Average of similarity between words
-#     """
-#     final_scores = []
-#     total_score = 0.0
-#
-#     for word1 in sentence1:
-#         word_scores = []
-#
-#         for word2 in sentence2:
-#             wup_score = word1.wup_similarity(word2)
-#             if wup_score is not None:
-#                 word_scores.append(wup_score)
-#
-#         if len(word_scores) > 0:
-#             final_scores.append(max(word_scores))
-#
-#     if len(final_scores) > 0:
-#         total_score = sum(final_scores) / len(final_scores)
-#
-#     return total_score
-
-
 def compare_words(sentence1, sentence2):
     """
     :param sentence1: String - First sentence to be compared
     :param sentence2: String - Second sentence to be compared
     :return: Average of similarity between words
     """
-    # brown_ic = wordnet_ic.ic('ic-brown.dat')  # can't use adjectives or adverbs
-    # semcor_ic = wordnet_ic.ic('ic-semcor.dat')
 
     final_scores = []
     total_score = 0.0
@@ -94,7 +66,6 @@ def compare_words(sentence1, sentence2):
 
         for synset2 in sentence2:
             set2 = set(synset2)
-
 
             # wup_score = None
             # # wup_score = len(set1.intersection(set2)) / len(set1.union(set2))
@@ -109,15 +80,12 @@ def compare_words(sentence1, sentence2):
             #     wup_score = synset1.jcn_similarity(synset2, semcor_ic)
             #     print("Score: ", wup_score)
 
-
-
-
             # Partial synonym check approach - attempt 3
 
             if len(set1.intersection(set2)) > 0:
-                print("Match found: ")
-                print(synset1, " and ", synset2)
-                print("wup_sim: ", synset1[0].wup_similarity(synset2[0]))
+                # print("Match found: ")
+                # print(synset1, " and ", synset2)
+                # print("wup_sim: ", synset1[0].wup_similarity(synset2[0]))
                 wup_score = 1
             else:
                 syn_scores = []
@@ -144,7 +112,7 @@ def compare_words(sentence1, sentence2):
     return total_score
 
 
-def compare_descriptions(class1, class2, zero_bad_matches):
+def compare_descriptions(class1, class2):
     """
     :param class1: First description being compared
     :param class2: Second description being compared
@@ -164,196 +132,7 @@ def compare_descriptions(class1, class2, zero_bad_matches):
     return score
 
 
-# def fetch_course_descriptions(institution_list, db_name):
-#     """
-#     :param institution_list: List of empty dictionaries corresponding with the possible institutions to be compared
-#     :param db_name: Name of database file
-#     :return: institution_list filled with appropriate data
-#     """
-#
-#     conn = sqlite3.connect(db_name)
-#     curs = conn.cursor()
-#
-#     for course in curs.execute('select distinct CourseNumber from Outcome').fetchall():
-#         description_string = ''
-#
-#         for desc in curs.execute('''select CourseDescription from Course where CourseNumber=?''', course):
-#             # print('len: ', len(''.join(desc)))
-#             description_string = ''.join(desc)
-#             # print('len: ', len(description_string), 'desc: ', description_string)
-#
-#         if len(description_string) > 0:
-#             if (curs.execute('''select InstitutionID from Course where CourseNumber=?''', course).fetchone()) is not None:
-#                 institution_check = 0
-#                 for idCheck in curs.execute('''select InstitutionID from Course where CourseNumber=?''',
-#                                             course).fetchone():
-#                     # print("ID: ", idCheck) #debug text
-#                     # print("Course: ", course, " Institution ID: ", idCheck)
-#                     institution_check = idCheck
-#                     # print("course: ", course, " ", institution_check)
-#
-#                 course_string = ''.join(course)
-#                 institution_list[institution_check - 1][course_string] = description_string
-#
-#     return institution_list
-
-
-# def create_create_statement(table, columns):
-#     statement = 'create table ' + table + '('
-#     for i in range(0, len(columns)):
-#         statement += columns[i]
-#         if i == len(columns) - 1:
-#             statement += ')'
-#         else:
-#             statement += ','
-#     return statement
-
-
-# def mass_compare_descriptions(inst1, inst2):
-#     """
-#     :param inst1: List element containing a dictionary containing a course (key) and outcomes (value)
-#     :param inst2: List element containing a dictionary containing a course (key) and outcomes (value)
-#     :return: List of lists that serves as a matrix of outcome comparisons for all courses
-#     """
-#     table = []
-#     for course1, desc1 in inst1.items():
-#         sim_list = []
-#         for course2, desc2 in inst2.items():
-#             # compare descriptions of each course in inst1 to each course in inst2, one at a time
-#             course_similarity = compare_descriptions(desc1, desc2, False)
-#             sim_list.append(course_similarity)
-#         table.append(sim_list)
-#     return table
-
-
-# def build_comparison_table(comp_table, db_name, table_name, course_and_desc_list):
-#     """
-#     :param comp_table: list of lists - comparison table of % similarity between outcomes or descriptions
-#     :param db_name: database name
-#     :param table_name: table name
-#     :param course_and_desc_list: dictionary of courses and their outcomes or descriptions
-#     :return:
-#     """
-#     col_names = ["OC_Courses"]
-#
-#     comp_conn = sqlite3.connect(db_name)
-#     comp_curs = comp_conn.cursor()
-#
-#     for name, description in course_and_desc_list[2].items():
-#         name = name.replace('-', '_')
-#         col_names.append(name)
-#
-#     print("col_names: ", col_names)
-#
-#     drop_statement = "drop table if exists " + table_name
-#     create_statement = create_create_statement(table_name, col_names)
-#     print("create_statement: ", create_statement)
-#     comp_curs.execute(drop_statement)
-#     comp_curs.execute(create_statement)
-#
-#     insert_statement = "insert into " + table_name + " values (?,"
-#     for i in range(len(comp_table[0])):
-#         insert_statement += "?"
-#         if i == len(comp_table[0]) - 1:
-#             insert_statement += ")"
-#         else:
-#             insert_statement += ","
-#
-#     course_list = []
-#     for k, v in course_and_desc_list[0].items():
-#         course_list.append(''.join(k))
-#
-#     for i in range(len(comp_table)):
-#         row = [course_list[i]]
-#         for j in range(len(comp_table[i])):
-#             row.append(comp_table[i][j])
-#         comp_curs.execute(insert_statement, row)
-#         comp_conn.commit()
-
-
-# def comparison_list(db_name, comp_table, jst_course):
-#     conn = sqlite3.connect(db_name)
-#     conn.row_factory = sqlite3.Row
-#     curs = conn.cursor()
-#     formatted_name = jst_course.replace('-', '_')
-#     sql_statement = 'select ' + formatted_name + ', OC_Courses from ' + comp_table
-#     curs.execute(sql_statement)
-#     result = [dict(row) for row in curs.fetchall()]
-#     # print(result)
-#     sorted_result = sorted(result, key=lambda k: k[formatted_name], reverse=True)
-#     return sorted_result
-
-
-# def output_comparisons(jst_course, comp_dict_list, db_name, filepath):
-#     conn = sqlite3.connect(db_name)
-#     curs = conn.cursor()
-#
-#     jst_course_name = curs.execute('select CourseName from Course where CourseNumber = ?', (jst_course,)).fetchone()
-#     jst_course_name = ''.join(jst_course_name)
-#
-#     filename = jst_course + ' ' + jst_course_name
-#     headline = 'Comparing ' + jst_course_name + '(' + jst_course + ')' ' to OC Courses\n\n'
-#     formatted_jst = jst_course.replace('-', '_')
-#
-#     tuple_list = curs.execute('select CourseEquivalenceNonOC from Course where CourseNumber = ?',
-#                               (jst_course,)).fetchall()
-#     equiv_list = [' '.join(item) for item in tuple_list]
-#     print(equiv_list)
-#
-#     filepath = filepath + filename
-#
-#     with open(filepath, 'w') as myfile:
-#         myfile.write(headline)
-#         myfile.write('Course Number\tScore\tEquiv.\tCourse Name\n\n')
-#         for dict_item in comp_dict_list:
-#             # sql_statement = 'select CourseName from Course where CourseNumber = ' + str(dict_item['OC_Courses'])
-#             # print(sql_statement)
-#             course = dict_item['OC_Courses']
-#             course_name = curs.execute('select CourseName from Course where CourseNumber = ?', (course,)).fetchone()
-#
-#             myfile.write(dict_item['OC_Courses'])
-#
-#             myfile.write('\t\t')
-#             myfile.write(str(dict_item[formatted_jst]))
-#             myfile.write('\t')
-#             for i in range(0, len(equiv_list)):
-#                 if dict_item['OC_Courses'] == equiv_list[i]:
-#                     myfile.write('YES')
-#
-#             myfile.write('\t')
-#             myfile.write(''.join(course_name))
-#             myfile.write('\n')
-
-
-# def grab_form_data(dbname, jst_num, oc_num):
-#     conn = sqlite3.connect(dbname)
-#     curs = conn.cursor()
-#
-#     select1 = 'select ReviewerID from Course where CourseNumber="' + oc_num + '"'
-#     if curs.execute(select1).fetchone() is not None:
-#         rev_id = ''.join(map(str, curs.execute(select1).fetchone()))
-#     else:
-#         print("No ReviewerID found")
-#         return
-#
-#     # select2 = 'select ReviewerName from Reviewer where ReviewerID=' + rev_id
-#     # rev_name = ''.join(curs.execute(select2).fetchone())
-#     #
-#     # select3 = 'select ReviewerDepartment from Reviewer where ReviewerID=' + rev_id
-#     # rev_dept = ''.join(curs.execute(select3).fetchone())
-#
-#     rev_name = ''.join(curs.execute('select ReviewerName from Reviewer where ReviewerID=?', (rev_id,)).fetchone())
-#     rev_dept = ''.join(curs.execute('select ReviewerDepartment from Reviewer where ReviewerID=?', (rev_id,)).fetchone())
-#     oc_name = ''.join(curs.execute('select CourseName from Course where CourseNumber=?', (oc_num,)).fetchone())
-#     jst_name = ''.join(curs.execute('select CourseName from Course where CourseNumber=?', (jst_num,)).fetchone())
-#     oc_desc = ''.join(curs.execute('select CourseDescription from Course where CourseNumber=?', (oc_num,)).fetchone())
-#     jst_desc = ''.join(curs.execute('select CourseDescription from Course where CourseNumber=?', (jst_num,)).fetchone())
-#
-#     data_list = [rev_name, rev_dept, jst_num, oc_num, oc_name, jst_name, oc_desc, jst_desc]
-#     return data_list
-
-
-def compare_courses(course1, course2):
+def compare_courses(course1, course2, reviewer):
     # conn = sqlite3.connect(db)
     # curs = conn.cursor()
     # c1sql = 'select OutcomeDescription from Outcome where CourseNumber="' + course1 + '"'
@@ -364,12 +143,10 @@ def compare_courses(course1, course2):
     comparison_dict = {}
 
     for outcome1 in course1.outcomes:
-        # print("Outcome1: ", outcome1)
         comp_list = []
         for outcome2 in course2.outcomes:
             outcomes_and_score = []
-            outcome_score = compare_descriptions(outcome1, outcome2, False)
-            # outcomes_and_score.append(outcome1)
+            outcome_score = compare_descriptions(outcome1, outcome2)
             outcomes_and_score.append(outcome2)
             outcomes_and_score.append(outcome_score)
             comp_list.append(outcomes_and_score)
@@ -377,24 +154,24 @@ def compare_courses(course1, course2):
         comp_list.sort(key=lambda x: x[1], reverse=True)
         comparison_dict[outcome1] = comp_list
 
-    file_gen = FileGen2.FileGen()
+    file_gen = FileGen2.FileGen(reviewer.name, reviewer.department, course2.number, course1.number,
+                                course1.name, course2.name, course1.description, course2.description)
 
     for oc, jst in comparison_dict.items():
         file_gen.Like_Outcomes(oc, jst)
 
-    file_name = './files/EvalForms/' + course1 + '_' + course2 + '_Eval_Form.docx'
+    file_name = './files/EvalForms/' + course1.number + '_' + course2.number + '_Eval_Form.docx'
     file_gen.Save_Doc(file_name)
 
 
 database = 'mce.sqlite3'
-# oc_courses = ['PE 107']
-# jst_courses = ['A-830-0030']
 
+# course_pairs = [['CJ 220', 'A-830-0030'], ['IRM 340', 'NV-1710-0118'], ['JMC 105', 'AR-2201-0603'],
+#                 ['MTH 120', 'NV-1710-0118'], ['SCI 107', 'AR-1601-0277'], ['PE 107', 'A-830-0030']]
+course_pairs = [['PE 107', 'A-830-0030', 'Nick Juday']]
 
-course_pairs = [['CJ 220', 'A-830-0030'], ['IRM 340', 'NV-1710-0118'], ['JMC 105', 'AR-2201-0603'],
-                ['MTH 120', 'NV-1710-0118'], ['SCI 107', 'AR-1601-0277'], ['PE 107', 'A-830-0030']]
-
-for pair in range(0, len(course_pairs)):
-    OC_Course = Course.Course(database, pair[0])
-    JST_Course = Course.Course(database, pair[1])
-    compare_courses(OC_Course, JST_Course)
+for pair in course_pairs:
+    OC_Course = Course(database, pair[0])
+    JST_Course = Course(database, pair[1])
+    Reviewer = Reviewer(database, pair[2])
+    compare_courses(OC_Course, JST_Course, Reviewer)
