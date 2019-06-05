@@ -214,11 +214,11 @@ class FileGen:
         self.Olivet_Course_Outcomes(c_outcome)
         iterator = 0
         for outcome in jst_outcome:
-            if iterator == len(jst_outcome)-1:
-                self.JST_Outcomes(outcome, jst_outcome[outcome], new_row=True)
+            if iterator == len(jst_outcome) - 1:
+                self.JST_Outcomes(outcome[0], outcome[1], new_row=True)
             else:
-                self.JST_Outcomes(outcome, jst_outcome[outcome])
-            iterator +=1
+                self.JST_Outcomes(outcome[0], outcome[1])
+            iterator += 1
 
 
     # will be used if we decide to implement emailing the form.
