@@ -167,10 +167,15 @@ database = 'mce.sqlite3'
 
 # course_pairs = [['CJ 220', 'A-830-0030'], ['IRM 340', 'NV-1710-0118'], ['JMC 105', 'AR-2201-0603'],
 #                 ['MTH 120', 'NV-1710-0118'], ['SCI 107', 'AR-1601-0277'], ['PE 107', 'A-830-0030']]
-course_pairs = [['PE 107', 'A-830-0030', 'Nick Juday']]
+course_pairs = ['PE 107', 'A-830-0030', 'Nick Juday']
 
-for pair in course_pairs:
-    OC_Course = Course(database, pair[0])
-    JST_Course = Course(database, pair[1])
-    Reviewer = Reviewer(database, pair[2])
-    compare_courses(OC_Course, JST_Course, Reviewer)
+OC_Course = Course(database, course_pairs[0])
+JST_Course = Course(database, course_pairs[1])
+Reviewer = Reviewer(database, course_pairs[2])
+compare_courses(OC_Course, JST_Course, Reviewer)
+
+# for course in course_pairs:
+#     OC_Course = Course(database, oc)
+#     JST_Course = Course(database, jst)
+#     Reviewer = Reviewer(database, rev)
+#     compare_courses(OC_Course, JST_Course, Reviewer)
