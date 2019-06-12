@@ -2,7 +2,7 @@ from nltk import word_tokenize, pos_tag
 from nltk.corpus import wordnet as wn
 # from nltk.corpus import wordnet_ic
 # import sqlite3
-import FileGen2
+import FileGen3 as FileGen2
 from Course import Course
 from Reviewer import Reviewer
 
