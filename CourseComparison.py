@@ -67,21 +67,6 @@ def compare_words(sentence1, sentence2):
         for synset2 in sentence2:
             set2 = set(synset2)
 
-            # wup_score = None
-            # # wup_score = len(set1.intersection(set2)) / len(set1.union(set2))
-            # lemma1, pos1, synset_index_str1 = str(synset1).lower().rsplit('.', 2)
-            # lemma2, pos2, synset_index_str2 = str(synset2).lower().rsplit('.', 2)
-            # # print("synset1: ", synset1)
-            # # print("synset2: ", synset2)
-            # # print("pos1: ", pos1)
-            # # print("pos2: ", pos2)
-            # if pos1 == pos2 and pos1 != 'a' and pos1 != 'r':
-            #     # res_similarity seemed bad, doesn't seem to be a standardized score
-            #     wup_score = synset1.jcn_similarity(synset2, semcor_ic)
-            #     print("Score: ", wup_score)
-
-            # Partial synonym check approach - attempt 3
-
             if len(set1.intersection(set2)) > 0:
                 # print("Match found: ")
                 # print(synset1, " and ", synset2)
@@ -163,7 +148,7 @@ def compare_courses(course1, course2, reviewer):
     file_gen.Save_Doc(file_name)
 
 
-database = 'mce.sqlite3'
+database = 'db.sqlite3'
 
 # course_pairs = [['CJ 220', 'A-830-0030'], ['IRM 340', 'NV-1710-0118'], ['JMC 105', 'AR-2201-0603'],
 #                 ['MTH 120', 'NV-1710-0118'], ['SCI 107', 'AR-1601-0277'], ['PE 107', 'A-830-0030']]

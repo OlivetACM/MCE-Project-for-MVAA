@@ -9,9 +9,9 @@ class Reviewer:
         curs = conn.cursor()
 
         self.name = name
-        self.phone = ''.join(curs.execute('select ReviewerPhone from Reviewer where ReviewerName=?',
+        self.phone = ''.join(curs.execute('select ReviewerPhone from dbadmin_reviewer where ReviewerName=?',
                                           (name,)).fetchone())
-        self.email = ''.join(curs.execute('select ReviewerEmail from Reviewer where ReviewerName=?',
+        self.email = ''.join(curs.execute('select ReviewerEmail from dbadmin_reviewer where ReviewerName=?',
                                           (name,)).fetchone())
-        self.department = ''.join(curs.execute('select ReviewerDepartment from Reviewer where ReviewerName=?',
+        self.department = ''.join(curs.execute('select ReviewerDepartment from dbadmin_reviewer where ReviewerName=?',
                                                (name,)).fetchone())

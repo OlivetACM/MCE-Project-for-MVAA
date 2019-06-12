@@ -9,9 +9,10 @@ class Course:
         curs = conn.cursor()
 
         self.number = num
-        self.name = ''.join(curs.execute('select CourseName from Course where CourseNumber=?', (num,)).fetchone())
-        self.description = ''.join(curs.execute('select CourseDescription from Course where CourseNumber=?',
+        self.name = ''.join(curs.execute('select CourseName from dbadmin_course where '
+                                         'CourseNumber=?', (num,)).fetchone())
+        self.description = ''.join(curs.execute('select CourseDescription from dbadmin_course where CourseNumber=?',
                                                 (num,)).fetchone())
-        self.outcomes = list(map(lambda x: x[0], curs.execute('select OutcomeDescription from Outcome where '
+        self.outcomes = list(map(lambda x: x[0], curs.execute('select OutcomeDescription from dbadmin_outcome where '
                                                               'CourseNumber=?', (num,)).fetchall()))
 
